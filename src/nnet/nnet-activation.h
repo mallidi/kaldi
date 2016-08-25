@@ -269,7 +269,8 @@ class Dropout : public Component {
  public:
   Dropout(int32 dim_in, int32 dim_out):
       Component(dim_in, dim_out),
-      dropout_retention_(0.5)
+      dropout_retention_(0.5),
+      crossvalidate_(false)
   { }
 
   ~Dropout()
@@ -307,13 +308,15 @@ class Dropout : public Component {
   void PropagateFnc(const CuMatrixBase<BaseFloat> &in,
                     CuMatrixBase<BaseFloat> *out) {
     out->CopyFromMat(in);
-    // switch off 50% of the inputs...
     dropout_mask_.Resize(out->NumRows(), out->NumCols());
     dropout_mask_.Set(dropout_retention_);
-    rand_.BinarizeProbs(dropout_mask_, &dropout_mask_);
+
+    if (!crossvalidate_) { // crossvalidate_ == false
+      // switch off 50% of the inputs...
+      rand_.BinarizeProbs(dropout_mask_, &dropout_mask_);
+    }
     out->MulElements(dropout_mask_);
-    // rescale to keep same dynamic range as w/o dropout
-    out->Scale(1.0/dropout_retention_);
+
   }
 
   void BackpropagateFnc(const CuMatrixBase<BaseFloat> &in,
@@ -321,10 +324,7 @@ class Dropout : public Component {
                         const CuMatrixBase<BaseFloat> &out_diff,
                         CuMatrixBase<BaseFloat> *in_diff) {
     in_diff->CopyFromMat(out_diff);
-    // use same mask on the error derivatives...
     in_diff->MulElements(dropout_mask_);
-    // enlarge output to fit dynamic range w/o dropout
-    in_diff->Scale(1.0/dropout_retention_);
   }
 
   BaseFloat GetDropoutRetention() { return dropout_retention_; }
@@ -333,11 +333,15 @@ class Dropout : public Component {
     dropout_retention_ = dr;
     KALDI_ASSERT(dropout_retention_ > 0.0 && dropout_retention_ <= 1.0);
   }
+  void SetCrossvalidateFlag(bool flag_val) {
+    crossvalidate_ = flag_val;
+  }
 
  private:
   CuRand<BaseFloat> rand_;
   CuMatrix<BaseFloat> dropout_mask_;
   BaseFloat dropout_retention_;
+  bool crossvalidate_;
 };
 
 

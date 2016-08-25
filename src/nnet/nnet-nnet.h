@@ -125,6 +125,9 @@ class Nnet {
   /// Set the dropout rate
   void SetDropoutRetention(BaseFloat r);
 
+  /// Set the crossvalidate flag for dropout rate
+  void SetCrossvalidateFlag(bool flag_val);
+
   /// Reset streams in multi-stream training,
   void ResetStreams(const std::vector<int32> &stream_reset_flag);
 

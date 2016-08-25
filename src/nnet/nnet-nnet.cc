@@ -277,6 +277,16 @@ void Nnet::SetDropoutRetention(BaseFloat r)  {
   }
 }
 
+void Nnet::SetCrossvalidateFlag(bool flag_val)  {
+  for (int32 c = 0; c < NumComponents(); c++) {
+    if (GetComponent(c).GetType() == Component::kDropout) {
+      Dropout& comp = dynamic_cast<Dropout&>(GetComponent(c));
+      comp.SetCrossvalidateFlag(flag_val);
+      KALDI_LOG << "Setting dropout crossvalidate flag in component " << c 
+	        << " to " << flag_val;
+    }
+  }
+}
 
 void Nnet::ResetStreams(const std::vector<int32> &stream_reset_flag) {
   for (int32 c = 0; c < NumComponents(); c++) {

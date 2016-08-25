@@ -108,10 +108,11 @@ int main(int argc, char *argv[]) {
     // we will subtract log-priors later,
     PdfPrior pdf_prior(prior_opts);
 
-    // disable dropout,
-    nnet_transf.SetDropoutRetention(1.0);
-    nnet.SetDropoutRetention(1.0);
+    // dropout scaling
+    nnet_transf.SetCrossvalidateFlag(true);
+    nnet.SetCrossvalidateFlag(true);
 
+  
     kaldi::int64 tot_t = 0;
 
     SequentialBaseFloatMatrixReader feature_reader(feature_rspecifier);
