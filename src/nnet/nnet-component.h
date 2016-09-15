@@ -64,6 +64,7 @@ class Component {
     kTanh,
     kParametricRelu,
     kDropout,
+    kBlockDropout,
     kLengthNormComponent,
 
     kTranform = 0x0400,

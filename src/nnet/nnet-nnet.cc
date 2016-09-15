@@ -23,6 +23,7 @@
 #include "nnet/nnet-multibasis-component.h"
 #include "nnet/nnet-activation.h"
 #include "nnet/nnet-affine-transform.h"
+#include "nnet/nnet-block-dropout-component.h"
 #include "nnet/nnet-various.h"
 
 namespace kaldi {
@@ -273,6 +274,13 @@ void Nnet::SetDropoutRetention(BaseFloat r)  {
       comp.SetDropoutRetention(r);
       KALDI_LOG << "Setting dropout-retention in component " << c
                 << " from " << r_old << " to " << r;
+    }
+    else if (GetComponent(c).GetType() == Component::kBlockDropout) {
+      BlockDropout& comp = dynamic_cast<BlockDropout&>(GetComponent(c));
+      BaseFloat r_old = comp.GetDropoutRetention();
+      comp.SetDropoutRetention(r);
+      KALDI_LOG << "Setting dropout-retention in component " << c
+		<< " from " << r_old << " to " << r;
     }
   }
 }
