@@ -15,7 +15,8 @@ l2_penalty=0
 
 # data processing,
 train_tool="nnet-train-frmshuff"
-train_tool_opts="--minibatch-size=256 --randomizer-size=32768 --randomizer-seed=777"
+train_tool_opts="--minibatch-size=256 --randomizer-size=32768"
+randomizer_seed=777
 feature_transform=
 
 # learn rate scheduling,
@@ -99,8 +100,10 @@ for iter in $(seq -w $max_iters); do
   [ -e $dir/.done_iter$iter ] && echo -n "skipping... " && ls $mlp_next* && continue 
   
   # training,
+  this_randomizer_seed=$(($randomizer_seed+${iter#0}))
   log=$dir/log/iter${iter}.tr.log; hostname>$log
   $train_tool --cross-validate=false --randomize=true --verbose=$verbose $train_tool_opts \
+    --randomizer-seed=$this_randomizer_seed \
     --learn-rate=$learn_rate --momentum=$momentum \
     --l1-penalty=$l1_penalty --l2-penalty=$l2_penalty \
     ${feature_transform:+ --feature-transform=$feature_transform} \
