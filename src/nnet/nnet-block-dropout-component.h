@@ -81,7 +81,14 @@ class BlockDropout : public Component {
   }
 
   std::string Info() const {
-    return std::string("\n  linearity");
+    std::vector<int32> stream_indices_host;
+    stream_indices_.CopyToVec(&stream_indices_host);
+
+    std::stringstream o_str;
+    std::copy(stream_indices_host.begin(), stream_indices_host.end(), std::ostream_iterator<int>(o_str, ","));
+
+    return std::string("\n  streamindices ") +
+      o_str.str();
   }
 
   void PropagateFnc(const CuMatrixBase<BaseFloat> &in,
