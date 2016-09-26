@@ -213,27 +213,26 @@ if o.bottleneck_dim != 0:
       print "<AffineTransform> <InputDim> %d <OutputDim> %d <BiasMean> %f <BiasRange> %f <ParamStddev> %f <LearnRateCoef> %f <BiasLearnRateCoef> %f <MaxNorm> %f %s" % \
        (o.bottleneck_dim, num_hid_neurons, o.hid_bias_mean, o.hid_bias_range, \
         (o.param_stddev_factor * Glorot(o.bottleneck_dim, num_hid_neurons) * 0.75 ), 0.1, 0.1, o.max_norm, o.affine_opts)
+      if o.dropout_retention > 0.0:
+        print "<Dropout> <InputDim> %d <OutputDim> %d <DropoutRetention> %f" % (num_hid_neurons, num_hid_neurons, o.dropout_retention)      
   else:
     # Same learninig-rate and stddev-formula everywhere,
     print "<LinearTransform> <InputDim> %d <OutputDim> %d <ParamStddev> %f" % \
      (num_hid_neurons, o.bottleneck_dim, \
       (o.param_stddev_factor * Glorot(num_hid_neurons, o.bottleneck_dim)))
-    print "<AffineTransform> <InputDim> %d <OutputDim> %d <BiasMean> %f <BiasRange> %f <ParamStddev> %f <MaxNorm> %f %s" % \
-     (o.bottleneck_dim, num_hid_neurons, o.hid_bias_mean, o.hid_bias_range, \
-      (o.param_stddev_factor * Glorot(o.bottleneck_dim, num_hid_neurons)), o.max_norm, o.affine_opts)
-  print "%s <InputDim> %d <OutputDim> %d %s" % (o.activation_type, num_hid_neurons, num_hid_neurons, o.activation_opts)
-  
-  if o.dropout_retention > 0.0:
-    print "<Dropout> <InputDim> %d <OutputDim> %d <DropoutRetention> %f" % (num_hid_neurons, num_hid_neurons, o.dropout_retention)
+
     if o.bottleneck_before_last_affine:
       print "<AffineTransform> <InputDim> %d <OutputDim> %d <BiasMean> %f <BiasRange> %f <ParamStddev> %f <MaxNorm> %f %s" % \
         (o.bottleneck_dim, num_leaves, 0.0, 0.0, \
          (o.param_stddev_factor * Glorot(o.bottleneck_dim, num_leaves)), o.max_norm, o.affine_opts)
     else:
-      print "<AffineTransform> <InputDim> %d <OutputDim> %d <BiasMean> %f <BiasRange> %f <ParamStddev> %f <MaxNorm> %f %s" % \
-       (o.bottleneck_dim, num_hid_neurons, o.hid_bias_mean, o.hid_bias_range, \
-        (o.param_stddev_factor * Glorot(o.bottleneck_dim, num_hid_neurons)), o.max_norm, o.affine_opts)
-      print "%s <InputDim> %d <OutputDim> %d %s" % (o.activation_type, num_hid_neurons, num_hid_neurons, o.activation_opts)
+      print "<AffineTransform> <InputDim> %d <OutputDim> %d <BiasMean> %f <BiasRange> %f <ParamStddev> %f <MaxNorm> %f" % \
+        (o.bottleneck_dim, num_hid_neurons, o.hid_bias_mean, o.hid_bias_range, \
+         (o.param_stddev_factor * Glorot(o.bottleneck_dim, num_hid_neurons)), o.max_norm)
+      print "%s <InputDim> %d <OutputDim> %d" % (o.activation_type, num_hid_neurons, num_hid_neurons)
+      if o.dropout_retention > 0.0:
+        print "<Dropout> <InputDim> %d <OutputDim> %d <DropoutRetention> %f" % (num_hid_neurons, num_hid_neurons, o.dropout_retention)
+        
 
 if (o.bottleneck_before_last_affine == False) or (o.bottleneck_dim == 0):
   # Last AffineTransform (10x smaller learning rate on bias)
